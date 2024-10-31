@@ -1,20 +1,45 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import { SafeAreaView, Text } from "react-native";
+import DatePicker from "./DatePicker";
+import TimePicker from "./TimePicker";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+interface DateTime {
+  date: Date | null; // Holds the selected date
+  time: Date | null; // Holds the selected time
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const App: React.FC = () => {
+  const [selectedDateTime, setSelectedDateTime] = useState<DateTime>({
+    date: null,
+    time: null,
+  }); // Combined state
+
+  const handleDateChange = (date: Date) => {
+    setSelectedDateTime((prevState) => ({ ...prevState, date })); // Update date while preserving time
+  };
+
+  const handleTimeChange = (time: Date) => {
+    setSelectedDateTime((prevstate) => ({ ...prevstate, time })); // Update the state with the selected time
+  };
+
+  return (
+    <SafeAreaView>
+      <DatePicker onDateChange={handleDateChange} />
+      {selectedDateTime.date && (
+        <Text>
+          You selected date: {selectedDateTime.date.toLocaleDateString()}{" "}
+          {/* Display the selected date */}
+        </Text>
+      )}
+      <TimePicker onTimeChange={handleTimeChange} />
+      {selectedDateTime.time && (
+        <Text>
+          You selected time: {selectedDateTime.time.toLocaleTimeString()}{" "}
+          {/* Display the selected time */}
+        </Text>
+      )}
+    </SafeAreaView>
+  );
+};
+
+export default App;

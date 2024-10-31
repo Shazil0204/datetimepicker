@@ -5,37 +5,54 @@ import TimePicker from "./TimePicker";
 
 interface DateTime {
   date: Date | null; // Holds the selected date
-  time: Date | null; // Holds the selected time
+  startTime: Date | null; // Holds the start time
+  endTime: Date | null; // Holds the end time
 }
 
 const App: React.FC = () => {
   const [selectedDateTime, setSelectedDateTime] = useState<DateTime>({
     date: null,
-    time: null,
+    startTime: null,
+    endTime: null,
   }); // Combined state
 
   const handleDateChange = (date: Date) => {
-    setSelectedDateTime((prevState) => ({ ...prevState, date })); // Update date while preserving time
+    setSelectedDateTime((prevState) => ({ ...prevState, date })); // Update date
   };
 
-  const handleTimeChange = (time: Date) => {
-    setSelectedDateTime((prevState) => ({ ...prevState, time })); // Update the state with the selected time
+  const handleTimeChange = (time: Date, isStartTime: boolean) => {
+    setSelectedDateTime((prevState) => ({
+      ...prevState,
+      [isStartTime ? "startTime" : "endTime"]: time, // Update start or end time
+    }));
+  };
+
+  const calculateTimeDifference = () => {
+    if (selectedDateTime.startTime && selectedDateTime.endTime) {
+      const start = selectedDateTime.startTime.getTime();
+      const end = selectedDateTime.endTime.getTime();
+      const diffInMs = end - start; // Difference in milliseconds
+
+      if (diffInMs < 0) return "End time must be after start time"; // Handle invalid time selection
+
+      const hours = Math.floor((diffInMs % 86400000) / 3600000); // Calculate hours
+      const minutes = Math.round(((diffInMs % 86400000) % 3600000) / 60000); // Calculate minutes
+
+      return `${hours} hour(s) and ${minutes} minute(s)`;
+    }
+    return null; // Return null if times are not set
   };
 
   return (
     <SafeAreaView>
-      <DatePicker onDateChange={handleDateChange} />
-      {selectedDateTime.date && (
+      <TimePicker onTimeChange={handleTimeChange} isStartTime={true} />
+      {/* Start Time Picker */}
+      <TimePicker onTimeChange={handleTimeChange} isStartTime={false} />
+      {/* End Time Picker */}
+      {selectedDateTime.startTime && selectedDateTime.endTime && (
         <Text>
-          You selected date: {selectedDateTime.date.toLocaleDateString()}{" "}
-          {/* Display the selected date */}
-        </Text>
-      )}
-      <TimePicker onTimeChange={handleTimeChange} />
-      {selectedDateTime.time && (
-        <Text>
-          You selected time: {selectedDateTime.time.toLocaleTimeString()}{" "}
-          {/* Display the selected time */}
+          Time difference: {calculateTimeDifference()}
+          {/* Display time difference */}
         </Text>
       )}
     </SafeAreaView>

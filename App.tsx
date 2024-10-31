@@ -19,7 +19,7 @@ const App: React.FC = () => {
   };
 
   const handleTimeChange = (time: Date) => {
-    setSelectedDateTime((prevstate) => ({ ...prevstate, time })); // Update the state with the selected time
+    setSelectedDateTime((prevState) => ({ ...prevState, time })); // Update the state with the selected time
   };
 
   return (
